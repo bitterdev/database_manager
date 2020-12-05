@@ -1,0 +1,144 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: database_manager 0.9.2\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2019-08-28T11:33:57+02:00\n"
+"PO-Revision-Date: 2019-08-28T11:33:57+02:00\n"
+"Language: en_US\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: packages/database_manager/controller.php:31
+msgid "Database management integrated in concrete5 dashboard."
+msgstr ""
+
+#: packages/database_manager/controller.php:35
+msgid "Database Manager"
+msgstr ""
+
+#: packages/database_manager/controller.php:61
+msgid "Access Database Manager"
+msgstr ""
+
+#: packages/database_manager/controller.php:66
+msgid "Insert Rows"
+msgstr ""
+
+#: packages/database_manager/controller.php:71
+msgid "Edit Rows"
+msgstr ""
+
+#: packages/database_manager/controller.php:76
+msgid "Delete Rows"
+msgstr ""
+
+#: packages/database_manager/single_pages/dashboard/database_manager.php:96
+msgid "Go"
+msgstr ""
+
+#: packages/database_manager/single_pages/dashboard/database_manager.php:98
+msgid "Confirm"
+msgstr ""
+
+#: packages/database_manager/single_pages/dashboard/database_manager.php:109
+#: packages/database_manager/views/dialogs/database_manager/edit.php:38
+#: packages/database_manager/views/dialogs/database_manager/insert.php:34
+msgid "Cancel"
+msgstr ""
+
+#: packages/database_manager/single_pages/dashboard/database_manager.php:147
+msgid "Are you sure?"
+msgstr ""
+
+#: packages/database_manager/single_pages/dashboard/database_manager.php:152
+#: packages/database_manager/src/Bitter/DatabaseManager/Menu.php:91
+msgid "Delete"
+msgstr ""
+
+#: packages/database_manager/elements/dashboard/did_you_know.php:86
+msgid "Did you know?"
+msgstr ""
+
+#: packages/database_manager/elements/dashboard/did_you_know.php:96
+#: packages/database_manager/elements/dashboard/did_you_know.php:125
+#: packages/database_manager/elements/dashboard/help.php:20
+#: packages/database_manager/elements/dashboard/reminder.php:27
+msgid "here"
+msgstr ""
+
+#: packages/database_manager/elements/dashboard/did_you_know.php:91
+msgid "I have many other add-ons to power up your site. Maybe the following add-on sounds interesting to you? If you want to see a full list with all of my add-ons, please click %s. As an existing customer you will get 10%% discount on your next purchase."
+msgstr ""
+
+#: packages/database_manager/elements/dashboard/did_you_know.php:110
+msgid "Details"
+msgstr ""
+
+#: packages/database_manager/elements/dashboard/did_you_know.php:125
+msgid "Click %s to hide."
+msgstr ""
+
+#: packages/database_manager/elements/dashboard/help.php:15
+msgid "If you need support please click %s."
+msgstr ""
+
+#: packages/database_manager/elements/dashboard/install_post.php:21
+msgid "Thank You for purchasing this add-on!"
+msgstr ""
+
+#: packages/database_manager/elements/dashboard/install_post.php:25
+msgid "Follow me on Twitter and Facebook to get the latest news and notifications about updates, new add-ons/themes and special offers."
+msgstr ""
+
+#: packages/database_manager/elements/dashboard/install_post.php:34
+msgid "Follow @fabian_bitter"
+msgstr ""
+
+#: packages/database_manager/elements/dashboard/license_check.php:26
+msgid "You have not connected your site to the Marketplace. To benefit from updates, connect your site to the Marketplace and assign the purchased licenses."
+msgstr ""
+
+#: packages/database_manager/elements/dashboard/reminder.php:22
+msgid "Rate this add-on on concrete5.org and as a thank-you gift can choose another add-on of mine up to $35. This offer may only be claimed once. Click %s to rate now."
+msgstr ""
+
+#: packages/database_manager/elements/header.php:25
+msgid "Select Table"
+msgstr ""
+
+#: packages/database_manager/controllers/single_page/dashboard/database_manager.php:72
+msgid "Selected Table: %s"
+msgstr ""
+
+#: packages/database_manager/controllers/dialog/database_manager/edit.php:71
+msgid "Row updated successfully."
+msgstr ""
+
+#: packages/database_manager/controllers/dialog/database_manager/insert.php:63
+msgid "Row inserted successfully."
+msgstr ""
+
+#: packages/database_manager/views/dialogs/database_manager/edit.php:42
+msgid "Save"
+msgstr ""
+
+#: packages/database_manager/views/dialogs/database_manager/insert.php:38
+#: packages/database_manager/src/Bitter/DatabaseManager/Menu.php:72
+msgid "Insert"
+msgstr ""
+
+#: packages/database_manager/src/Bitter/DatabaseManager/Menu.php:53
+msgid "Edit"
+msgstr ""
+
+#: packages/database_manager/src/Bitter/DatabaseManager/Menu.php:54
+msgid "Edit Row..."
+msgstr ""
+
+#: packages/database_manager/src/Bitter/DatabaseManager/Menu.php:73
+msgid "Insert Row..."
+msgstr ""

@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "postinstall": ".cleanup_vendor_code.sh"
+  }
+}
