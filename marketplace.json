@@ -1,6 +1,4 @@
 {
-  "packageHandle": "database_manager",
-  "packageFile": "build/database_manager.zip",
   "title": "Database Manager",
   "supportHostedOffsite": true,
   "supportHostedOffsiteUrl": "https://www.bitter.de/support",
