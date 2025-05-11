@@ -1,13 +1,5 @@
 <?php
 
-/**
- * @project:   Database Manager
- *
- * @author     Fabian Bitter (fabian@bitter.de)
- * @copyright  (C) 2020 Fabian Bitter (www.bitter.de)
- * @version    X.X.X
- */
-
 namespace Bitter\DatabaseManager;
 
 use Concrete\Core\Application\ApplicationAwareInterface;
@@ -19,7 +11,6 @@ use Doctrine\DBAL\Driver\Statement;
 
 class DatabaseManager implements ApplicationAwareInterface
 {
-
     use ApplicationAwareTrait;
 
     const COLUMN_TYPE_STRING = 0;
@@ -60,9 +51,10 @@ class DatabaseManager implements ApplicationAwareInterface
     /**
      * @return string
      */
-    public function getDefaultTable()
+    public function getDefaultTable(): string
     {
-        return array_pop(array_reverse($this->getTables()));
+        $array = array_reverse($this->getTables());
+        return (string)array_pop($array);
     }
 
     /**
@@ -142,14 +134,14 @@ class DatabaseManager implements ApplicationAwareInterface
      * @param string $table
      * @return string
      */
-    public function getFirstColumn($table)
+    public function getFirstColumn($table): string
     {
-
         if (!$this->isValidTable($table)) {
             return '';
         }
 
-        return array_pop(array_reverse($this->getTableColums($table)));
+        $array = array_reverse($this->getTableColums($table));
+        return (string)array_pop($array);
     }
 
     /**
@@ -517,7 +509,6 @@ class DatabaseManager implements ApplicationAwareInterface
      */
     public function deleteRow($table, $rowIdentifiers)
     {
-
         if (Key::getByHandle("delete_rows")->validate()) {
             if (!$this->isValidTable($table)) {
                 return false;

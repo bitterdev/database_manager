@@ -1,148 +1,129 @@
 <?php
 
-/**
- * @project:   Database Manager
- *
- * @author     Fabian Bitter (fabian@bitter.de)
- * @copyright  (C) 2020 Fabian Bitter (www.bitter.de)
- * @version    X.X.X
- */
-
-defined('C5_EXECUTE') or die('Access denied');
+defined('C5_EXECUTE') or die('Access Denied.');
 
 use Concrete\Core\Cache\Level\ExpensiveCache;
-use Concrete\Core\Config\Repository\Repository;
-use Concrete\Core\Http\Client\Client;
-use Concrete\Core\Package\Package;
-use Concrete\Core\Package\PackageService;
+use Concrete\Core\Cookie\CookieJar;
 use Concrete\Core\Support\Facade\Application;
-use Concrete\Core\Support\Facade\Url;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 
-/** @var $packageHandle string */
 $app = Application::getFacadeApplication();
-/** @var $packageService PackageService */
-$packageService = $app->make(PackageService::class);
-/** @var $pkg Package */
-$pkg = $packageService->getByHandle($packageHandle);
-/** @var $config Repository */
-$config = $app->make(Repository::class);
+/** @var ExpensiveCache $expensiveCache */
+/** @noinspection PhpUnhandledExceptionInspection */
+$expensiveCache = $app->make(ExpensiveCache::class);
+/** @var CookieJar $cookie */
+/** @noinspection PhpUnhandledExceptionInspection */
+$cookie = $app->make('cookie');
 
-$feedData = [];
+$productList = $expensiveCache->getItem("BitterProductList");
 
-if (version_compare(APP_VERSION, '8.0', '>=')) {
+$products = [];
 
-    /*
-     * Try to get feed from cache
-     */
+if ($productList->isMiss()) {
+    $client = new Client([
+        'base_uri' => 'https://bitter.de',
+        'timeout' => 10.0,
+    ]);
 
-    /** @var $cache ExpensiveCache */
-    $cache = $app->make('cache/expensive');
+    $json = null;
 
-    $cacheItem = $cache->getItem('bitter.product_feed');
+    try {
+        $response = $client->request('GET', '/index.php/api/v1/payments/products/get_products', [
+            'query' => ['locale' => 'en_US'],
+            'headers' => [
+                'Accept' => 'application/json',
+            ],
+        ]);
+        $statusCode = $response->getStatusCode();
 
-    if ($cacheItem->isMiss()) {
-        $cacheItem->lock();
+        if ($statusCode === 200) {
+            $contentType = $response->getHeaderLine('Content-Type');
 
-        /*
-         * Retrieve live feed from server
-         */
+            if ($contentType === 'application/json') {
+                $body = $response->getBody()->getContents();
+                $json = json_decode($body, true);
 
-        try {
-
-            /** @var $httpClient Client */
-            $httpClient = $app->make(Client::class);
-            $httpClient->setUri("https://www.bitter.de/bitter/addon_list/feed/json");
-
-            $response = $httpClient->send();
-
-            if ($response->isSuccess()) {
-                $responseBody = $response->getBody();
-                /** @noinspection PhpComposerExtensionStubsInspection */
-                $feedData = @json_decode($responseBody, true);
-
-                /*
-                 * Store feed to cache
-                 */
-
-                $ttl = 24 * 60 * 60; // 1 day
-
-                $cache->save($cacheItem->set($feedData)->expiresAfter($ttl));
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    $json = null;
+                }
             }
-        } catch (Exception $x) {
-            // Can't connect to server. Skip error.
         }
-    } else {
-        $feedData = $cacheItem->get();
+
+    } catch (GuzzleException $e) {
+
     }
+
+    if (is_array($json) &&
+        isset($json["products"]) &&
+        is_array($json["products"]) &&
+        count($json["products"]) > 0) {
+        $products = $json["products"];
+        $productList->lock();
+        $expensiveCache->save($productList->set($products)->expiresAfter(60 * 60 * 24));
+    }
+} else {
+    $products = $productList->get();
 }
 
-/*
- * Get random item
- */
-
-$randomItem = null;
-
-if (is_array($feedData) && count($feedData) > 0) {
-    $randomItem = $feedData[array_rand($feedData)];
+if (!isset($products) || !is_array($products)) {
+    $randomProduct = [];
+} else {
+    $randomKey = array_rand($products);
+    $randomProduct = $products[$randomKey];
 }
+
+$name = $randomProduct["name"] ?? null;
+$shortDescription = $randomProduct["shortDescription"] ?? null;
+$marketplaceUrl = $randomProduct["attributes"]["concrete_marketplace_url"] ?? null;
+$displayNotice = !$cookie->has("hideDidYouKnowAlert");
 ?>
 
-<?php if (is_object($pkg) && !$pkg->getConfig()->get('did_you_know.hide')): ?>
-    <?php if (!is_null($randomItem)): ?>
-        <div id="did-you-know">
-            <hr>
+<?php if ($displayNotice && $name !== null && $shortDescription !== null && $marketplaceUrl !== null) { ?>
+    <div id="did-you-know">
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <?php /** @noinspection HtmlUnknownTarget */
+            echo t("Discover even more high-quality add-ons for Concrete CMS that will take your projects to the next level! Have you checked out the %s add-on yet? Find out more %s!",
+                sprintf(
+                    "<a href=\"%s\" target='_blank'>%s</a>",
+                    h($marketplaceUrl),
+                    htmlspecialchars($name, ENT_QUOTES | ENT_HTML5, 'UTF-8')
+                ),
+                sprintf(
+                    "<a href=\"%s\" target='_blank'>%s</a>",
+                    h($marketplaceUrl),
+                    t("here")
+                )
+            ); ?>
 
-            <div class="<?php echo $randomItem["title"]; ?>">
-                <h3>
-                    <?php echo t("Did you know?"); ?>
-                </h3>
-
-                <p>
-                    <?php
-                    echo t(
-                        "I have many other add-ons to power up your site. Maybe the following add-on sounds interesting to you? If you want to see a full list with all of my add-ons, please click %s. As an existing customer you will get 10%% discount on your next purchase.",
-                        sprintf(
-                            "<a href=\"https://www.bitter.de/\" target=\"_blank\">%s</a>",
-                            t("here")
-                        )
-                    );
-                    ?>
-                </p>
-
-                <div class="media-row">
-                    <div class="pull-left">
-                        <img style="width: 49px" src="<?php echo h($randomItem["icon"]); ?>"
-                             alt="<?php echo h($randomItem["name"]); ?>" class="media-object">
-                    </div>
-
-                    <div class="media-body">
-                        <a href="<?php echo h($randomItem["url"]); ?>" class="btn pull-right btn-sm btn-default"
-                           target="_blank">
-                            <?php echo t("Details"); ?>
-                        </a>
-
-                        <h4 class="media-heading">
-                            <?php echo $randomItem["name"]; ?>
-                        </h4>
-
-                        <p>
-                            <?php echo $randomItem["description"]; ?>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <p>
-                <?php echo t("Click %s to hide.", sprintf("<a href=\"javascript:void(0);\" onclick=\"return hideDidYouKnow();\">%s</a>", t("here"))); ?>
-            </p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+    </div>
 
-        <script>
-            function hideDidYouKnow() {
-                $.ajax("<?php echo h((string)Url::to("/bitter/database_manager/did_you_know/hide")); ?>");
-                $("#did-you-know").remove();
-                return false;
+    <style>
+        #did-you-know .alert a {
+            color: var(--bs-alert-color);
+            font-weight: bold;
+        }
+    </style>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const didYouKnowEl = document.getElementById('did-you-know');
+
+            const closeBtn = didYouKnowEl.querySelector('.btn-close');
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function () {
+                    if (location.protocol === 'https:') {
+                        document.cookie = "hideDidYouKnowAlert=true; path=/; max-age=31536000; SameSite=Lax; secure";
+                    } else {
+                        document.cookie = "hideDidYouKnowAlert=true; path=/; max-age=31536000; SameSite=Lax";
+                    }
+
+                    didYouKnowEl.classList.add('d-none');
+                });
             }
-        </script>
-    <?php endif; ?>
-<?php endif; ?>
+        });
+    </script>
+<?php } ?>

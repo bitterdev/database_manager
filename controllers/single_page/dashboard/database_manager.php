@@ -1,24 +1,18 @@
 <?php
 
-/**
- * @project:   Database Manager
- *
- * @author     Fabian Bitter (fabian@bitter.de)
- * @copyright  (C) 2020 Fabian Bitter (www.bitter.de)
- * @version    X.X.X
- */
-
 namespace Concrete\Package\DatabaseManager\Controller\SinglePage\Dashboard;
 
 use Concrete\Core\Page\Controller\DashboardPageController;
 use Concrete\Core\Http\ResponseFactory;
 use Concrete\Core\Http\Request;
+use Concrete\Core\Page\Page;
+use Concrete\Core\Support\Facade\Url;
 use Symfony\Component\HttpFoundation\Response;
 use Bitter\DatabaseManager\DatabaseManager as DatabaseManagerService;
 use Bitter\DatabaseManager\Header;
 
-class DatabaseManager extends DashboardPageController {
-
+class DatabaseManager extends DashboardPageController
+{
     /** @var ResponseFactory */
     protected $responseFactory;
 
@@ -28,45 +22,44 @@ class DatabaseManager extends DashboardPageController {
     /** @var DatabaseManagerService; */
     protected $databaseManager;
 
-    public function on_start() {
+    public function on_start()
+    {
         parent::on_start();
 
-        /*
-         * Load dependencies
-         */
-
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->responseFactory = $this->app->make(ResponseFactory::class);
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->request = $this->app->make(Request::class);
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->databaseManager = $this->app->make(DatabaseManagerService::class);
     }
 
-    public function delete() {
+    public function delete()
+    {
         $params = $this->request->query->all();
 
         $selectedTable = $params["selectedTable"];
         $rowIdentifiers = $params["rowIdentifiers"];
         $returnUrl = $params["returnUrl"];
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->databaseManager->deleteRow($selectedTable, $rowIdentifiers);
-        
+
         return $this->responseFactory->redirect($returnUrl, Response::HTTP_TEMPORARY_REDIRECT);
     }
-    
 
-    public function view() {
-        
-        /*
-         * Set Defaults
-         */
 
+    public function view()
+    {
         $selectedTable = $this->request->query->get("selectedTable");
         $orderBy = $this->request->query->get("orderBy");
         $orderDirection = $this->request->query->get("orderDirection");
-        $pageIndex = (int) $this->request->query->get("pageIndex", 1);
-        $pageSize = (int) $this->request->query->get("pageSize", 50);
+        $pageIndex = (int)$this->request->query->get("pageIndex", 1);
+        $pageSize = (int)$this->request->query->get("pageSize", 50);
 
         if (!$this->databaseManager->isValidTable($selectedTable)) {
             $selectedTable = $this->databaseManager->getDefaultTable();
+            return $this->responseFactory->redirect(Url::to(Page::getCurrentPage())->setQuery(["selectedTable" => $selectedTable]), Response::HTTP_TEMPORARY_REDIRECT);
         }
 
         $this->set('pageTitle', t("Selected Table: %s", $selectedTable));
@@ -87,7 +80,6 @@ class DatabaseManager extends DashboardPageController {
         $this->set("pageSize", $pageSize);
 
         $this->set("headerMenu", new Header($selectedTable));
-        $this->requireAsset('bootstrap-datetimepicker');
     }
 
 }

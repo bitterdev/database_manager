@@ -1,19 +1,12 @@
 <?php
-/**
- * @project:   Database Manager
- *
- * @author     Fabian Bitter (fabian@bitter.de)
- * @copyright  (C) 2020 Fabian Bitter (www.bitter.de)
- * @version    X.X.X
- */
+
+defined('C5_EXECUTE') or die("Access Denied.");
 
 use Bitter\DatabaseManager\DatabaseManager;
 use Concrete\Core\Form\Service\Form;
 use Concrete\Core\Support\Facade\Application;
 use Concrete\Core\Form\Service\Widget\DateTime;
 use HtmlObject\Element;
-
-defined('C5_EXECUTE') or die("Access Denied.");
 
 /** @var string $selectedTable */
 /** @var array $rowIdentifiers */
@@ -22,8 +15,10 @@ defined('C5_EXECUTE') or die("Access Denied.");
 
 $app = Application::getFacadeApplication();
 /** @var Form $form */
+/** @noinspection PhpUnhandledExceptionInspection */
 $form = $app->make(Form::class);
 /** @var DateTime $dateTime */
+/** @noinspection PhpUnhandledExceptionInspection */
 $dateTime = $app->make(DateTime::class);
 ?>
 
@@ -52,11 +47,7 @@ $dateTime = $app->make(DateTime::class);
                     break;
 
                 case DatabaseManager::COLUMN_TYPE_DATE:
-                    $htmlElement = $form->text("fields[" . $column["name"] . "]", $value, ["class" => "form-control datetimepicker"]);
-
-                    $inputGroup = (new Element('div'))->addClass('input-group date');
-                    $inputGroup->setValue($htmlElement);
-                    $htmlElement = $inputGroup;
+                    $htmlElement = $form->text("fields[" . $column["name"] . "]", $value, ["class" => "form-control"]);
 
                     break;
 
@@ -74,8 +65,8 @@ $dateTime = $app->make(DateTime::class);
 
                 $inputGroup = (new Element('div'))->addClass('input-group');
                 $inputGroup->setValue($htmlElement);
-                $inputGroupAddon = (new Element('span'))->addClass('input-group-addon');
-                $checkboxHtml = $form->checkbox("null[" . $column["name"] . "]", 1, $isNull, ["class" => "null-checkbox"]);
+                $inputGroupAddon = (new Element('span'))->addClass('input-group-text');
+                $checkboxHtml = $form->checkbox("null[" . $column["name"] . "]", 1, $isNull, ["class" => "null-checkbox form-check-input mt-0"]);
                 $checkboxLabel = (new Element('label'))->setAttribute("for", "null[" . $column["name"] . "]")->addClass("null-label")->setValue($checkboxHtml . " " . t("NULL"));
                 $checkboxWrapper = (new Element('div'))->addClass('checkbox null-checkbox-wrapper');
                 $checkboxWrapper->setValue($checkboxLabel);
@@ -95,18 +86,7 @@ $dateTime = $app->make(DateTime::class);
 </div>
 
 <!--suppress CssUnusedSymbol -->
-<style type="text/css">
-
-    /* Override font definition. Because font definition in core file app.css is corrupted. */
-    @font-face {
-        font-family: "Glyphicons Halflings";
-        src: url("<?php echo rtrim((string) $app->make('url/canonical'), '/') . "/concrete/css/fonts/glyphiconshalflings-regular.eot"; ?>");
-        src: url("<?php echo rtrim((string) $app->make('url/canonical'), '/') . "/concrete/css/fonts/glyphiconshalflings-regular.eot"; ?>?#iefix") format("embedded-opentype"),
-        url("<?php echo rtrim((string) $app->make('url/canonical'), '/') . "/concrete/css/fonts/glyphiconshalflings-regular.woff"; ?>") format("woff"),
-        url("<?php echo rtrim((string) $app->make('url/canonical'), '/') . "/concrete/css/fonts/glyphiconshalflings-regular.ttf"; ?>") format("truetype"),
-        url("<?php echo rtrim((string) $app->make('url/canonical'), '/') . "/concrete/css/fonts/glyphiconshalflings-regular.svg"; ?>#glyphicons_halflingsregular") format("svg")
-    }
-
+<style>
     .database-fields .null-checkbox-wrapper {
         margin: 0 !important;
         margin-top: 3px !important;
@@ -135,21 +115,15 @@ $dateTime = $app->make(DateTime::class);
         float: left !important;
         width: 100% !important;
     }
-
 </style>
 
 <!--suppress JSUnresolvedVariable -->
 <script>
     (function ($) {
         $(function () {
-            $('.datetimepicker').datetimepicker({
-                format: 'YYYY-MM-DD HH:mm:ss'
-            });
-
             $(".null-checkbox").bind("change", function () {
                 $(this).parent().parent().parent().parent().find(".form-control").prop("disabled", $(this).is(":checked"));
             }).trigger("change");
         });
     })(jQuery);
 </script>
-

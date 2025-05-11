@@ -1,13 +1,5 @@
 <?php
 
-/**
- * @project:   Database Manager
- *
- * @author     Fabian Bitter (fabian@bitter.de)
- * @copyright  (C) 2020 Fabian Bitter (www.bitter.de)
- * @version    X.X.X
- */
-
 defined('C5_EXECUTE') or die('Access denied');
 
 use Concrete\Core\Captcha\CaptchaInterface;
@@ -81,11 +73,11 @@ $captcha = $app->make(CaptchaInterface::class);
     </div>
 
     <div class="dialog-buttons">
-        <button class="btn btn-default pull-left" data-dialog-action="cancel">
+        <button class="btn btn-secondary float-left" data-dialog-action="cancel">
             <?php echo t('Cancel') ?>
         </button>
 
-        <button type="button" data-dialog-action="submit" class="btn btn-primary pull-right">
+        <button type="button" data-dialog-action="submit" class="btn btn-primary float-right">
             <?php echo t('Create Ticket') ?>
         </button>
     </div>

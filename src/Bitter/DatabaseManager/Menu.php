@@ -1,16 +1,8 @@
 <?php
 
-/**
- * @project:   Database Manager
- *
- * @author     Fabian Bitter (fabian@bitter.de)
- * @copyright  (C) 2020 Fabian Bitter (www.bitter.de)
- * @version    X.X.X
- */
-
 namespace Bitter\DatabaseManager;
 
-use Concrete\Core\Application\UserInterface\ContextMenu\Menu as ContextMenu;
+use Concrete\Core\Application\UserInterface\ContextMenu\DropdownMenu as ContextMenu;
 use Concrete\Core\Application\UserInterface\ContextMenu\Item\LinkItem;
 use Concrete\Core\Application\UserInterface\ContextMenu\Item\DialogLinkItem;
 use Concrete\Core\Support\Facade\Application;
@@ -20,7 +12,6 @@ use Concrete\Core\Permission\Key\Key;
 
 class Menu extends ContextMenu
 {
-
     protected $menuAttributes = ['class' => 'ccm-popover-file-menu'];
     protected $minItemThreshold = 0;
 
@@ -30,9 +21,11 @@ class Menu extends ContextMenu
 
         $app = Application::getFacadeApplication();
         /** @var DatabaseManager $databaseManager */
+        /** @noinspection PhpUnhandledExceptionInspection */
         $databaseManager = $app->make(DatabaseManager::class);
         $rowIdentifiers = $databaseManager->getRowIdentifiers($table, $row, "rowIdentifiers[", "]");
         /** @var Request $request */
+        /** @noinspection PhpUnhandledExceptionInspection */
         $request = $app->make(Request::class);
 
         $basicQueryParams = [
@@ -51,26 +44,7 @@ class Menu extends ContextMenu
                         http_build_query($queryParams)
                     ),
                     t('Edit'),
-                    t("Edit Row..."),
-                    500,
-                    500,
-                    [
-                        "dialog-on-close" => "window.location.reload()"
-                    ]
-                )
-            );
-        }
-
-        if (Key::getByHandle("insert_rows")->validate()) {
-            $this->addItem(
-                new DialogLinkItem(
-                    sprintf(
-                        "%s?%s",
-                        Url::to("/bitter/database_manager/dialogs/insert"),
-                        http_build_query($basicQueryParams)
-                    ),
-                    t('Insert'),
-                    t("Insert Row..."),
+                    t("Edit Row"),
                     500,
                     500,
                     [

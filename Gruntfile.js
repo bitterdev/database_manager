@@ -1,16 +1,7 @@
-/**
- * @project:   Database Manager
- *
- * @author     Fabian Bitter (fabian@bitter.de)
- * @copyright  (C) 2020 Fabian Bitter (www.bitter.de)
- * @version    X.X.X
- */
-
 var packageName = "database_manager";
 
 module.exports = function (grunt) {
     grunt.initConfig({
-
         pkg: grunt.file.readJSON('package.json'),
         version: {
             php: {
@@ -35,45 +26,28 @@ module.exports = function (grunt) {
                 ]
             }
         },
-        composer: {
-            options: {
-                usePhp: true,
-                composerLocation: './node_modules/getcomposer/composer.phar'
-            },
-            dev: {
-                options: {
-                    flags: ['ignore-platform-reqs']
-                }
-            },
-            release: {
-                options: {
-                    flags: ['no-dev']
-                }
-            }
-        },
         copy: {
             main: {
                 files: [
                     {src: ['controllers/**'], dest: "dist/"},
                     {src: ['elements/**'], dest: "dist/"},
+                    {src: ['routes/**'], dest: "dist/"},
                     {src: ['single_pages/**'], dest: "dist/"},
                     {src: ['src/**'], dest: "dist/"},
                     {src: ['views/**'], dest: "dist/"},
-                    {src: ['routes/**'], dest: "dist/"},
-                    {src: ['languages/**'], dest: "dist/"},
-                    {src: ['bower_components/**'], dest: "dist/"},
                     {src: ['controller.php'], dest: "dist/", filter: 'isFile'},
-                    {src: ['CHANGELOG'], dest: "dist/", filter: 'isFile'},
+                    {src: ['icon.png'], dest: "dist/", filter: 'isFile'},
                     {src: ['INSTALL.TXT'], dest: "dist/", filter: 'isFile'},
-                    {src: ['LICENESE.TXT'], dest: "dist/", filter: 'isFile'},
-                    {src: ['icon.png'], dest: "dist/", filter: 'isFile'}
+                    {src: ['LICENSE.TXT'], dest: "dist/", filter: 'isFile'},
+                    {src: ['CHANGELOG'], dest: "dist/", filter: 'isFile'},
+                    {src: ['data.xml'], dest: "dist/", filter: 'isFile'}
                 ]
             }
         },
         compress: {
             main: {
                 options: {
-                    archive: 'build/' + packageName + '.zip'
+                    archive: 'release/' + packageName + '.zip'
                 },
                 files: [
                     {src: ['**'], dest: packageName, expand: true, cwd: 'dist/'}
@@ -81,27 +55,14 @@ module.exports = function (grunt) {
             }
         },
         clean: {
-            dist: ['dist'],
-            composer: ['vendor', 'composer.lock']
-        },
-        phpcsfixer: {
-            app: {
-                dir: 'dist'
-            },
-            options: {
-                bin: './vendor/friendsofphp/php-cs-fixer/php-cs-fixer',
-                usingCache: "no",
-                quiet: true
-            }
+            dist: ['dist']
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-compress');
     grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-composer');
-    grunt.loadNpmTasks('grunt-php-cs-fixer');
     grunt.loadNpmTasks('grunt-version');
     grunt.loadNpmTasks('grunt-contrib-copy');
 
-    grunt.registerTask('default', ['clean:composer', 'clean:dist', 'copy', 'version', 'clean:composer', 'composer:dev:install', 'phpcsfixer', 'compress:main', 'clean:dist']);
+    grunt.registerTask('default', ['clean:dist', 'copy', 'version', 'compress:main', 'clean:dist']);
 };

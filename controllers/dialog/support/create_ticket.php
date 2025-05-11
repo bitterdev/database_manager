@@ -1,13 +1,5 @@
 <?php
 
-/**
- * @project:   Database Manager
- *
- * @author     Fabian Bitter (fabian@bitter.de)
- * @copyright  (C) 2020 Fabian Bitter (www.bitter.de)
- * @version    X.X.X
- */
-
 namespace Concrete\Package\DatabaseManager\Controller\Dialog\Support;
 
 use Concrete\Controller\Backend\UserInterface;
@@ -23,7 +15,7 @@ class CreateTicket extends UserInterface
 {
     protected $viewPath = '/dialogs/support/create_ticket';
 
-    protected function canAccess()
+    protected function canAccess(): bool
     {
         return true;
     }
@@ -31,6 +23,7 @@ class CreateTicket extends UserInterface
     public function submit()
     {
         /** @var ResponseFactory $responseFactory */
+        /** @noinspection PhpUnhandledExceptionInspection */
         $responseFactory = $this->app->make(ResponseFactory::class);
         $editResponse = new EditResponse();
         $errorList = new ErrorList();

@@ -1,20 +1,11 @@
 <?php
 
-/**
- * @project:   Database Manager
- *
- * @author     Fabian Bitter (fabian@bitter.de)
- * @copyright  (C) 2020 Fabian Bitter (www.bitter.de)
- * @version    X.X.X
- */
-
 namespace Bitter\DatabaseManager;
 
 use Concrete\Core\Controller\ElementController;
 
 class Header extends ElementController
 {
-
     protected $pkgHandle = "database_manager";
     protected $selectedTable = null;
 
@@ -25,7 +16,7 @@ class Header extends ElementController
         $this->selectedTable = $selectedTable;
     }
 
-    public function getElement()
+    public function getElement(): string
     {
         return 'header';
     }
@@ -34,5 +25,4 @@ class Header extends ElementController
     {
         $this->set("selectedTable", $this->selectedTable);
     }
-
 }

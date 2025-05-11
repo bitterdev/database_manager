@@ -1,7 +1,0 @@
-{
-  "name": "database_manager",
-  "dependencies": {
-    "eonasdan-bootstrap-datetimepicker": "*",
-    "glyphicons-halflings": "*"
-  }
-}

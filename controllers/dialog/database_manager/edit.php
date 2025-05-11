@@ -1,13 +1,5 @@
 <?php /** @noinspection DuplicatedCode */
 
-/**
- * @project:   Database Manager
- *
- * @author     Fabian Bitter (fabian@bitter.de)
- * @copyright  (C) 2020 Fabian Bitter (www.bitter.de)
- * @version    X.X.X
- */
-
 namespace Concrete\Package\DatabaseManager\Controller\Dialog\DatabaseManager;
 
 use Concrete\Controller\Backend\UserInterface;
@@ -39,8 +31,11 @@ class Edit extends UserInterface
             $this->app = Application::getFacadeApplication();
         }
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->request = $this->app->make(Request::class);
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->databaseManager = $this->app->make(DatabaseManager::class);
+        /** @noinspection PhpUnhandledExceptionInspection */
         $this->responseFactory = $this->app->make(ResponseFactory::class);
     }
 
@@ -109,7 +104,7 @@ class Edit extends UserInterface
         $response->outputJSON();
     }
 
-    public function canAccess()
+    public function canAccess(): bool
     {
         return Key::getByHandle("edit_rows")->validate();
     }

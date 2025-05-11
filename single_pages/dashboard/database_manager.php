@@ -1,11 +1,6 @@
 <?php
-/**
- * @project:   Database Manager
- *
- * @author     Fabian Bitter (fabian@bitter.de)
- * @copyright  (C) 2020 Fabian Bitter (www.bitter.de)
- * @version    X.X.X
- */
+
+defined('C5_EXECUTE') or die('Access denied');
 
 use Bitter\DatabaseManager\Menu;
 use Concrete\Core\Legacy\Pagination;
@@ -13,8 +8,6 @@ use Concrete\Core\Support\Facade\Application;
 use Concrete\Core\Support\Facade\Url as UrlFacade;
 use Concrete\Core\Utility\Service\Url;
 use Concrete\Core\View\View;
-
-defined('C5_EXECUTE') or die('Access denied');
 
 /** @var int $pageIndex */
 /** @var int $pageSize */
@@ -27,17 +20,15 @@ defined('C5_EXECUTE') or die('Access denied');
 
 $app = Application::getFacadeApplication();
 /** @var Url $urlHelper */
+/** @noinspection PhpUnhandledExceptionInspection */
 $urlHelper = $app->make(Url::class);
-
-/** @noinspection PhpUnhandledExceptionInspection */
-View::element('/dashboard/help', null, 'database_manager');
-/** @noinspection PhpUnhandledExceptionInspection */
-View::element('/dashboard/reminder', array("packageHandle" => "database_manager", "rateUrl" => "https://www.concrete5.org/marketplace/addons/database-manager-1/reviews"), 'database_manager');
-/** @noinspection PhpUnhandledExceptionInspection */
-View::element('/dashboard/license_check', array("packageHandle" => "database_manager"), 'database_manager');
 
 ?>
 
+<?php /** @noinspection PhpUnhandledExceptionInspection */
+View::element("dashboard/did_you_know", [], "database_manager"); ?>
+
+<div id="ccm-search-results-table" style="overflow-x: auto; min-height: 50vh;">
     <table id="database-manager-table" class="ccm-search-results-table">
         <thead>
         <tr>
@@ -66,6 +57,10 @@ View::element('/dashboard/license_check', array("packageHandle" => "database_man
                     </a>
                 </th>
             <?php endforeach; ?>
+
+            <th>
+                &nbsp;
+            </th>
         </tr>
         </thead>
 
@@ -77,109 +72,100 @@ View::element('/dashboard/license_check', array("packageHandle" => "database_man
                 <?php foreach ($tableRow as $tableColumn => $tableValue): ?>
                     <td>
                         <?php echo $tableValue; ?>
+                    </td>
+                <?php endforeach; ?>
+
+                <td class="ccm-search-results-menu-launcher">
+                    <div class="dropdown float-end" data-menu="search-result">
+                        <button class="btn btn-icon show" data-boundary="viewport" type="button"
+                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            <svg width="16" height="4">
+                                <use xlink:href="#icon-menu-launcher"></use>
+                            </svg>
+                        </button>
 
                         <?php
                         if ($i === 0) {
                             $menu = new Menu($selectedTable, $tableRow);
-                            echo (string)$menu->getMenuElement();
+                            echo $menu->getMenuElement();
                         }
                         $i++
                         ?>
-                    </td>
-                <?php endforeach; ?>
+                    </div>
+                </td>
             </tr>
         <?php endforeach; ?>
         </tbody>
     </table>
+</div>
 
-    <div class="text-center">
-        <ul class="pagination">
-            <?php
-            /** @var Pagination $pagination */
-            $pagination = $app->make(Pagination::class);
-            $pagination->queryStringPagingVariable = "pageIndex";
-            $pagination->init($pageIndex, $tableCount, UrlFacade::to("/dashboard/database_manager"), $pageSize);
-            echo $pagination->getPages("li");
-            ?>
-        </ul>
-    </div>
+<div class="text-center">
+    <ul class="pagination">
+        <?php
+        /** @var Pagination $pagination */
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $pagination = $app->make(Pagination::class);
+        $pagination->queryStringPagingVariable = "pageIndex";
+        $pagination->init($pageIndex, $tableCount, UrlFacade::to("/dashboard/database_manager"), $pageSize);
+        echo $pagination->getPages("li");
+        ?>
+    </ul>
+</div>
 
-    <!--suppress ES6ConvertVarToLetConst, JSUnresolvedVariable -->
-    <script type="text/javascript">
-        (function ($) {
-            $(function () {
-                // Add polyfill for version 8.0.0
-                if (typeof ConcreteAlert.confirm === "undefined") {
-                    ConcreteAlert.confirm = function (a, c, d, e) {
-                        var f = $('<div id="ccm-popup-confirmation" class="ccm-ui"><div id="ccm-popup-confirmation-message">' + a + "</div>");
-                        d = d ? "btn " + d : "btn btn-primary";
-                        e = e ? e : "<?php echo h(t("Go")); ?>";
-                        f.dialog({
-                            title: "<?php echo h(t("Confirm")); ?>",
-                            width: 500,
-                            maxHeight: 500,
-                            modal: !0,
-                            dialogClass: "ccm-ui",
-                            close: function () {
-                                f.remove()
-                            },
-                            buttons: [{}],
-                            open: function () {
-                                $(this).parent().find(".ui-dialog-buttonpane").addClass("ccm-ui").html("");
-                                $(this).parent().find(".ui-dialog-buttonpane").append('<button onclick="jQuery.fn.dialog.closeTop()" class="btn btn-default">' + "<?php echo h(t("Cancel")); ?>" + '</button><button data-dialog-action="submit-confirmation-dialog" class="btn ' + d + ' pull-right">' + e + "</button></div>")
-                            }
-                        });
-                        f.parent().on("click", "button[data-dialog-action=submit-confirmation-dialog]", function () {
-                            return c()
-                        })
-                    };
-                }
-
-                $("#database-manager-table tbody tr").on("mouseover", function () {
-                    $(this).addClass("ccm-search-select-hover");
-                }).on("mouseout", function () {
-                    $(this).removeClass("ccm-search-select-hover");
-                }).contextmenu(function (e) {
-                    e.preventDefault();
-
-                    var el = this;
-
-                    $("#database-manager-table tbody tr").each(function () {
-                        if (JSON.stringify(this) !== JSON.stringify(el)) {
-                            $(this).removeClass("ccm-menu-item-active");
+<!--suppress ES6ConvertVarToLetConst, JSUnresolvedVariable, JSUnresolvedFunction -->
+<script type="text/javascript">
+    (function ($) {
+        $(function () {
+            // Add polyfill for version 8.0.0
+            if (typeof ConcreteAlert.confirm === "undefined") {
+                ConcreteAlert.confirm = function (a, c, d, e) {
+                    var f = $('<div id="ccm-popup-confirmation" class="ccm-ui"><div id="ccm-popup-confirmation-message">' + a + "</div>");
+                    d = d ? "btn " + d : "btn btn-primary";
+                    e = e ? e : "<?php echo h(t("Go")); ?>";
+                    f.dialog({
+                        title: "<?php echo h(t("Confirm")); ?>",
+                        width: 500,
+                        maxHeight: 500,
+                        modal: !0,
+                        dialogClass: "ccm-ui",
+                        close: function () {
+                            f.remove()
+                        },
+                        buttons: [{}],
+                        open: function () {
+                            $(this).parent().find(".ui-dialog-buttonpane").addClass("ccm-ui").html("");
+                            $(this).parent().find(".ui-dialog-buttonpane").append('<button onclick="jQuery.fn.dialog.closeTop()" class="btn btn-default">' + "<?php echo h(t("Cancel")); ?>" + '</button><button data-dialog-action="submit-confirmation-dialog" class="btn ' + d + ' pull-right">' + e + "</button></div>")
                         }
                     });
+                    f.parent().on("click", "button[data-dialog-action=submit-confirmation-dialog]", function () {
+                        return c()
+                    })
+                };
+            }
 
-                    var concreteMenu = new ConcreteMenu($(this), {
-                        menu: $(this).find(".ccm-popover-file-menu"),
-                        handle: 'none',
-                        container: $(this)
-                    });
-
-                    concreteMenu.show(e);
-
-                    $("a[data-action='delete']").bind("click", function (e) {
-                        e.preventDefault();
-
-                        var deleteUrl = $(this).attr("href");
-
-                        ConcreteAlert.confirm(
-                            "<?php echo h(t("Are you sure?")); ?>",
-                            function () {
-                                document.location.href = deleteUrl;
-                            },
-                            'btn-danger',
-                            "<?php echo h(t("Delete")); ?>"
-                        );
-
-                        return false;
-                    });
-
-                    return false;
-                });
+            $("#database-manager-table tbody tr").on("mouseover", function () {
+                $(this).addClass("ccm-search-select-hover");
+            }).on("mouseout", function () {
+                $(this).removeClass("ccm-search-select-hover");
             });
-        })(jQuery);
-    </script>
 
-<?php /** @noinspection PhpUnhandledExceptionInspection */
-View::element('/dashboard/did_you_know', array("packageHandle" => "database_manager"), 'database_manager'); ?>
+            $("a[data-action='delete']").on("click", function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                var deleteUrl = $(this).attr("href");
+
+                ConcreteAlert.confirm(
+                    "<?php echo h(t("Are you sure?")); ?>",
+                    function () {
+                        document.location.href = deleteUrl;
+                    },
+                    'btn-danger',
+                    "<?php echo h(t("Delete")); ?>"
+                );
+
+                return false;
+            });
+        });
+    })(jQuery);
+</script>
